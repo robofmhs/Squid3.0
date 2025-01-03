@@ -3,10 +3,11 @@ package Controls;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.Subsystems.Hang;
-import org.firstinspires.ftc.teamcode.Subsystems.OuttakeGripper;
-import org.firstinspires.ftc.teamcode.Subsystems.OuttakeWrist;
-import org.firstinspires.ftc.teamcode.Subsystems.PivotSlides;
+import Subsystems.Hang;
+import Subsystems.OuttakeGripper;
+import Subsystems.OuttakeWrist;
+import Subsystems.PivotSlides;
+
 
 @Config
 public class OuttakeControl {

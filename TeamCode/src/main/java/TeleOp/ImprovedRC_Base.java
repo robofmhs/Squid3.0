@@ -10,10 +10,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.teamcode.Controls.IntakeControl;
-import org.firstinspires.ftc.teamcode.Controls.OuttakeControl;
-import org.firstinspires.ftc.teamcode.Subsystems.Robot;
-import org.firstinspires.ftc.teamcode.Subsystems.Subsystem;
+import Controls.IntakeControl;
+import Controls.OuttakeControl;
+import Subsystems.Robot;
+import Subsystems.Subsystem;
 
 
 @TeleOp

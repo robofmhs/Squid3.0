@@ -2,9 +2,10 @@ package Controls;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.firstinspires.ftc.teamcode.Subsystems.IntakeDiffy;
-import org.firstinspires.ftc.teamcode.Subsystems.IntakeGripper;
-import org.firstinspires.ftc.teamcode.Subsystems.IntakeSlides;
+import Subsystems.IntakeDiffy;
+import Subsystems.IntakeGripper;
+import Subsystems.IntakeSlides;
+
 
 public class IntakeControl {
     public IntakeSlides slides;
