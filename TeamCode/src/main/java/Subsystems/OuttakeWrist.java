@@ -17,7 +17,7 @@ public class OuttakeWrist implements Subsystem {
     @Override
     public void update() {
         wrist.setPosition(wristPos);
-        wristPos= Range.clip(wrist.getPosition(),0,.81);
+        wristPos= Range.clip(wrist.getPosition(),0,.99);
     }
     public void setWristPos(double pos) {
         wristPos = pos;

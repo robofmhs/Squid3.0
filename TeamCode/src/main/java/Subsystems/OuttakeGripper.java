@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class OuttakeGripper implements Subsystem{
     public Servo OuttakeGripper;
     public static double gripperPos;
-    public static double gOpen = .5;
-    public static double gClose = .9;
+    public static double gOpen = .2;
+    public static double gClose = .55;
     @Override
     public void update(){
         OuttakeGripper.setPosition(gripperPos);

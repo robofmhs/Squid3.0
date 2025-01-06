@@ -18,6 +18,11 @@ public class IntakeControl {
     }
 
     public void update(Gamepad g1, Gamepad g2) {
+        if(g1.back){
+            diffy.setPosition(.7443,.5349);
+            slides.setPosition(0.1678);
+            gripper.setPosition(0.6);
+        }
         if(g1.dpad_up) {
             diffy.turnDiffy(0.0015);
         }

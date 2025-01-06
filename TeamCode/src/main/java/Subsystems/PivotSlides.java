@@ -11,8 +11,8 @@ import com.qualcomm.robotcore.util.Range;
 public class PivotSlides implements Subsystem{
     private DcMotorEx slide;
     private PIDController slideController;
-    public static double slideKp = 0.015, slideKi = 0.000, slideKd =0.000366;
-    public static double slideKf = 0.0008;
+    public static double slideKp = 0.031, slideKi = 0.000, slideKd =0.000373;
+    public static double slideKf = 0.0012;
     private int slidePos;
     public static int slideTarget;
     private double slidePower;

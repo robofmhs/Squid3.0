@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.Range;
 public class IntakeSlides implements Subsystem{
     private Servo IntakeSlide1;
 //    private Servo IntakeSlide2;
-    public static double slideMax=.55;
+    public static double slideMax=.46;
     public static double slideMin=.1;
     public static double slidePos;
     public IntakeSlides(HardwareMap map){

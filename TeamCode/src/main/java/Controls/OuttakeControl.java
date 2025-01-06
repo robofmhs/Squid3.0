@@ -25,26 +25,45 @@ public class OuttakeControl {
     }
     public void update(Gamepad g1, Gamepad g2) {
 
-        if(g2.right_stick_y<0){
-            wrist.turnWrist(-0.01);
-        }
-        else if(g2.right_stick_y>0){
-            wrist.turnWrist(0.01);
-        }
+//
+            wrist.turnWrist(0.01*-g2.right_stick_y);
+//
 
 
-        if(g2.x){
-            slides.togglePID(true);
-            slides.setSlideTarget(300);
-            wrist.setWristPos(.355);
-        }
         if(g2.y){
             slides.togglePID(true);
-            slides.setSlideTarget(200);
-            wrist.setWristPos(.605);
+            slides.setSlideTarget(1050);
+            if(Math.abs(slides.getSlidePos()-1050)<15){
+                wrist.setWristPos(.7753);
+            }
+        }
+        if(g2.b&&!g2.start){
+            slides.togglePID(true);
+            slides.setSlideTarget(1700);
+//            wrist.setWristPos(.8);
+            if(Math.abs(slides.getSlidePos()-1700)<25){
+                gripper.setPosition(.2);
+            }
+        }
+        if(g2.back){
+            wrist.setWristPos(.8557);
+            slides.togglePID(true);
+            slides.setSlideTarget(0);
+            if(Math.abs(slides.getSlidePos())<15){
+                gripper.setPosition(.2);
+            }
         }
 
-        hang.setArmTarget(hang.getArmTarget()+(int) (armInterval*g2.left_stick_y));
+        if(g2.x){
+            wrist.setWristPos(.125);
+            slides.togglePID(true);
+            slides.setSlideTarget(0);
+            if(Math.abs(slides.getSlidePos())<15){
+                gripper.setPosition(.2);
+            }
+        }
+
+        hang.setArmTarget(hang.getArmTarget()+(int)(armInterval*g2.left_stick_y));
 
 
         double slideTrig = g2.right_trigger-g2.left_trigger;
@@ -53,7 +72,7 @@ public class OuttakeControl {
            if(!g2.guide) {
                slides.togglePID(false);
            }
-           slides.setSlideControl(slideTrig * .7);
+           slides.setSlideControl(slideTrig);
 
        }
        else {
