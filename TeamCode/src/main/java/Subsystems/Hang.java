@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+// i could use this fr :3
 @Config
 public class Hang implements Subsystem{
     private DcMotorEx arm, arm2;

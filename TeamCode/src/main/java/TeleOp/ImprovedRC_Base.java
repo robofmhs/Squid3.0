@@ -50,6 +50,7 @@ public class ImprovedRC_Base extends LinearOpMode {
         robot.wrist.setWristPos(robot.wrist.getWristPos());
         robot.OuttakeGripper.setPosition(.55);
         robot.pivotSlides.togglePID(false);
+        robot.hang.setArmTarget(robot.hang.getArmPos() );
         waitForStart();
         follower.startTeleopDrive();
 

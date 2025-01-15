@@ -11,6 +11,7 @@ public class IntakeControl {
     public IntakeSlides slides;
     public IntakeDiffy diffy;
     public IntakeGripper gripper;
+    double mult = .5;
     public IntakeControl(IntakeSlides slides, IntakeDiffy diffy, IntakeGripper gripper) {
         this.slides = slides;
         this.diffy = diffy;
@@ -23,17 +24,25 @@ public class IntakeControl {
             slides.setPosition(0.1678);
             gripper.setPosition(0.6);
         }
+        if(g1.left_bumper){
+            mult=.5;
+        }
+        else{
+
+            mult=1;
+        }
+
         if(g1.dpad_up) {
-            diffy.turnDiffy(0.0015);
+            diffy.turnDiffy(0.003*mult);
         }
         else if(g1.dpad_down) {
-            diffy.turnDiffy(-0.0015);
+            diffy.turnDiffy(-0.003*mult);
         }
         else if(g1.dpad_left) {
-            diffy.rotateDiffy(0.0015);
+            diffy.rotateDiffy(0.003*mult);
         }
         else if(g1.dpad_right) {
-            diffy.rotateDiffy(-0.0015);
+            diffy.rotateDiffy(-0.003*mult);
         }
         else {
             diffy.turnDiffy(0);
@@ -46,18 +55,18 @@ public class IntakeControl {
             gripper.setPosition(.2);
         }
         if(g1.y){
-            diffy.setPosition(.6,.6);
+            diffy.setPosition(.567,.567);
             slides.setPosition(0);
         }
 
         if(g1.a){
-            if (gripper.IntakeGripper.getPosition() >= .2 && gripper.IntakeGripper.getPosition() < .2+.01) {
+            if (gripper.IntakeGripper.getPosition() >= .1 && gripper.IntakeGripper.getPosition() < .1+.01) {
                 gripper.IntakeGripper.setPosition(.6);
                 gripper.setPosition(.6);
 
             } else if (gripper.IntakeGripper.getPosition() >= .6) {
-                gripper.IntakeGripper.setPosition(.2);
-                gripper.setPosition(.2);
+                gripper.IntakeGripper.setPosition(1);
+                gripper.setPosition(.1);
 
             } else {
                 gripper.IntakeGripper.setPosition(.6);

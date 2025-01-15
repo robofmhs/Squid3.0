@@ -61,31 +61,33 @@ public class Red4_0 extends OpMode {
     private final Pose startPose = new Pose(7, 59, Math.toRadians(0));
 
     /** Scoring Pose of our robot. It is facing the submersible at a -45 degree (315 degree) angle. */
-    private final Pose scorePreLoadPose = new Pose(40.6, 65, Math.toRadians(0));
+    private final Pose scorePreLoadPose = new Pose(40.6, 67, Math.toRadians(0));
 
     private final Pose pickup1Control = new Pose(20, 59, Math.toRadians(0));
 
 
 
     /** Lowest (First) Sample from the Spike Mark */
-    private final Pose pickup1Pose = new Pose(33, 27.4, Math.toRadians(345));
+    private final Pose pickup1Pose = new Pose(33, 26.75, Math.toRadians(345));
 
     /** Middle (Second) Sample from the Spike Mark */
-    private final Pose pickup2Pose = new Pose(34, 16.5, Math.toRadians(347));
+    private final Pose pickup2Pose = new Pose(33, 17.5, Math.toRadians(345));
 
     /** Highest (Third) Sample from the Spike Mark */
-    private final Pose pickup3Pose = new Pose(46, 14, Math.toRadians(270));
+    private final Pose pickup3Pose = new Pose(44, 15.75, Math.toRadians(270));
 
     /** Highest (Third) Sample from the Spike Mark */
     private final Pose dropoffPose = new Pose(20, 20, Math.toRadians(180));
 
-    private final Pose intakePose = new Pose(10, 22, Math.toRadians(0));
+    private final Pose intakePosePause = new Pose(18, 26, Math.toRadians(0));
 
-    private final Pose score1Pose = new Pose(40, 69, Math.toRadians(0));
+    private final Pose intakePose = new Pose(14.5, 26, Math.toRadians(0));
 
-    private final Pose score2Pose = new Pose(40, 73, Math.toRadians(0));
+    private final Pose score1Pose = new Pose(43, 69, Math.toRadians(0));
 
-    private final Pose score3Pose = new Pose(40, 76, Math.toRadians(0));
+    private final Pose score2Pose = new Pose(43, 73, Math.toRadians(0));
+
+    private final Pose score3Pose = new Pose(43, 76, Math.toRadians(0));
 
     /** Park Pose for our robot, after we do all of the scoring. */
     private final Pose parkPose = new Pose(10, 22, Math.toRadians(0));
@@ -96,7 +98,7 @@ public class Red4_0 extends OpMode {
 
     /* These are our Paths and PathChains that we will define in buildPaths() */
     private Path scorePreload, park;
-    private PathChain grabPickup1,dropPickup1, grabPickup2,dropPickup2, grabPickup3,dropPickup3,intakePickup1,intakePickup2,intakePickup3, scorePickup1, scorePickup2, scorePickup3;
+    private PathChain grabPickup1,dropPickup1,intakePickup, grabPickup2,dropPickup2, grabPickup3,dropPickup3,intakePickup1,intakePickup2,intakePickup3, scorePickup1, scorePickup2, scorePickup3;
 
     /** Build the paths for the auto (adds, for example, constant/linear headings while doing paths)
      * It is necessary to do this so that all the paths are built before the auto starts. **/
@@ -160,24 +162,29 @@ public class Red4_0 extends OpMode {
                 .setLinearHeadingInterpolation(pickup3Pose.getHeading(), dropoffPose.getHeading())
                 .build();
         intakePickup1 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(dropoffPose), new Point(intakePose)))
-                .setLinearHeadingInterpolation(dropoffPose.getHeading(), intakePose.getHeading())
+                .addPath(new BezierLine(new Point(dropoffPose), new Point(intakePosePause)))
+                .setLinearHeadingInterpolation(dropoffPose.getHeading(), intakePosePause.getHeading())
                 .build();
+        intakePickup = follower.pathBuilder()
+                .addPath(new BezierLine(new Point(intakePosePause), new Point(intakePose)))
+                .setLinearHeadingInterpolation(intakePosePause.getHeading(), intakePose.getHeading())
+                .build();
+
         scorePickup1 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(intakePose), new Point(score1Pose)))
                 .setLinearHeadingInterpolation(intakePose.getHeading(), score1Pose.getHeading())
                 .build();
         intakePickup2 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(score1Pose), new Point(intakePose)))
-                .setLinearHeadingInterpolation(score1Pose.getHeading(), intakePose.getHeading())
+                .addPath(new BezierLine(new Point(score1Pose), new Point(intakePosePause)))
+                .setLinearHeadingInterpolation(score1Pose.getHeading(), intakePosePause.getHeading())
                 .build();
         scorePickup2 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(intakePose), new Point(score2Pose)))
                 .setLinearHeadingInterpolation(intakePose.getHeading(), score2Pose.getHeading())
                 .build();
         intakePickup3 = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(score2Pose), new Point(intakePose)))
-                .setLinearHeadingInterpolation(score2Pose.getHeading(), intakePose.getHeading())
+                .addPath(new BezierLine(new Point(score2Pose), new Point(intakePosePause)))
+                .setLinearHeadingInterpolation(score2Pose.getHeading(), intakePosePause.getHeading())
                 .build();
         scorePickup3 = follower.pathBuilder()
                 .addPath(new BezierLine(new Point(intakePose), new Point(score3Pose)))
@@ -212,8 +219,10 @@ public class Red4_0 extends OpMode {
                 */
 
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(follower.getPose().getX() > (scorePreLoadPose.getX() - 1) && follower.getPose().getY() > (scorePreLoadPose.getY() - 1)
-                    &&Math.abs(outSlide.getCurrentPosition()-outSlide.getTargetPosition())<15
+
+
+                if(Math.abs(follower.getPose().getX()-scorePreLoadPose.getX())<1&&Math.abs(follower.getPose().getY()-scorePreLoadPose.getY())<1
+                        &&Math.abs(outSlide.getCurrentPosition()-outSlide.getTargetPosition())<15
                     ) {
                     /* Score Preload */
                     outSlide.setTargetPosition(1670);
@@ -247,8 +256,8 @@ public class Red4_0 extends OpMode {
                        ) {
                     /* Grab Sample */
                     intakeSlide.setPosition(.2653);
-                    diffy1.setPosition(.514);//.489
-                    diffy2.setPosition(.540);//.515
+                    diffy1.setPosition(.504);//.489
+                    diffy2.setPosition(.530);//.515
 
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
 //                    follower.followPath(dropPickup1,true);
@@ -259,8 +268,8 @@ public class Red4_0 extends OpMode {
                 if(pathTimer.getElapsedTimeSeconds() > .7
                 ) {
                     /* Score Preload */
-                    diffy1.setPosition(.489);//.489
-                    diffy2.setPosition(.515);//.515
+                    diffy1.setPosition(.479);//.489
+                    diffy2.setPosition(.505);//.515
                     intakeGripper.setPosition(.6);
 
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
@@ -281,8 +290,8 @@ public class Red4_0 extends OpMode {
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if( Math.abs(follower.getPose().getX()-dropoffPose.getX())<1&&Math.abs(follower.getPose().getY()-dropoffPose.getY())<1) {
                     /* Score Sample */
-                    diffy1.setPosition(.519);//.489
-                    diffy2.setPosition(.545);//.515
+                    diffy1.setPosition(.509);//.489
+                    diffy2.setPosition(.535);//.515
                     intakeGripper.setPosition(.2);
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
                     follower.followPath(grabPickup2,true);
@@ -293,9 +302,9 @@ public class Red4_0 extends OpMode {
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup2Pose's position */
                 if(Math.abs(follower.getPose().getX()-pickup2Pose.getX())<1&&Math.abs(follower.getPose().getY()-pickup2Pose.getY())<1) {
                     /* Grab Sample */
-                    intakeSlide.setPosition(.2);
-                    diffy1.setPosition(.519);//.489
-                    diffy2.setPosition(.545);//.515
+                    intakeSlide.setPosition(.2623);
+                    diffy1.setPosition(.509);//.489
+                    diffy2.setPosition(.535);//.515
 
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
 //                    follower.followPath(dropPickup2,true);
@@ -306,8 +315,8 @@ public class Red4_0 extends OpMode {
                 if(pathTimer.getElapsedTimeSeconds() > 1
                 ) {
                     /* Score Preload */
-                    diffy1.setPosition(.489);//.489
-                    diffy2.setPosition(.515);//.515
+                    diffy1.setPosition(.479);//.489
+                    diffy2.setPosition(.505);//.515
                     intakeGripper.setPosition(.6);
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
 //                    follower.followPath(dropPickup2,true);
@@ -322,12 +331,12 @@ public class Red4_0 extends OpMode {
                 break;
             case 9:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(follower.getPose().getX() > (dropoffPose.getX() - 1) && follower.getPose().getY() > (dropoffPose.getY() - 1)) {
+                if(Math.abs(follower.getPose().getX()-dropoffPose.getX())<1&&Math.abs(follower.getPose().getY()-dropoffPose.getY())<1) {
                     /* Score Sample */
                     intakeGripper.setPosition(.2);
                     intakeSlide.setPosition(.13);
-                    diffy1.setPosition(.5555);//.489
-                    diffy2.setPosition(.4505);//.515
+                    diffy1.setPosition(.5505);//.489
+                    diffy2.setPosition(.4455);//.515
 
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
 //                    follower.followPath(grabPickup3,true);
@@ -339,12 +348,16 @@ public class Red4_0 extends OpMode {
                     follower.followPath(grabPickup3,true);
                     setPathState(11);
                 }
+                break;
             case 11:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
-                if(follower.getPose().getX() > (pickup3Pose.getX() - 1) && follower.getPose().getY() > (pickup3Pose.getY() - 1)
+
+                if( Math.abs(follower.getPose().getX()-pickup3Pose.getX())<1&&Math.abs(follower.getPose().getY()-pickup3Pose.getY())<1
                         &&pathTimer.getElapsedTimeSeconds()>1.6
                 ) {
                     /* Grab Sample */
+                    diffy1.setPosition(.5505);//.489
+                    diffy2.setPosition(.4455);//.515
                     intakeGripper.setPosition(.6);
 
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
@@ -357,9 +370,11 @@ public class Red4_0 extends OpMode {
                     follower.followPath(dropPickup3,true);
                     setPathState(13);
                 }
+                break;
             case 13:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(follower.getPose().getX() > (dropoffPose.getX() - 1) && follower.getPose().getY() > (dropoffPose.getY() - 1)) {
+
+                if(Math.abs(follower.getPose().getX()-dropoffPose.getX())<1&&Math.abs(follower.getPose().getY()-dropoffPose.getY())<1) {
                     /* Score Sample */
                     intakeGripper.setPosition(.2);
                     intakeSlide.setPosition(.1);
@@ -368,17 +383,17 @@ public class Red4_0 extends OpMode {
                     outSlide.setTargetPosition(0);
                     outSlide.setPower(1);
                     outSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    wrist.setPosition(0);
+                    wrist.setPosition(.125);
 
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are parked */
-//                    follower.followPath(intakePickup1,true);
-                    setPathState(-14);
+                    follower.followPath(intakePickup1,true);
+                    setPathState(14);
                 }
                 break;
             case 14:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(follower.getPose().getX() > (intakePose.getX() - 1) && follower.getPose().getY() > (intakePose.getY() - 1)
-                    &&pathTimer.getElapsedTimeSeconds()>4
+
+                if(Math.abs(follower.getPose().getX()-intakePosePause.getX())<1&&Math.abs(follower.getPose().getY()-intakePosePause.getY())<1
                 ) {
                     /* Score Sample */
                     diffy1.setPosition(.7243);//.489 .7443,.5349
@@ -386,28 +401,48 @@ public class Red4_0 extends OpMode {
                     wrist.setPosition(.125);
 
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are parked */
-//                    follower.followPath(scorePickup1,true);
+//                    follower.followPath(intakePickup,true);
+                    setPathState(145);
+                }
+                break;
+            case 145:
+                if(pathTimer.getElapsedTimeSeconds()>2){
+                    follower.setMaxPower(.5);
+                    follower.followPath(intakePickup,true);
+                    setPathState(105);
+                }
+                break;
+            case 105:
+                if(pathTimer.getElapsedTimeSeconds()>3){
+                    outtakeGripper.setPosition(.55);
+                    follower.setMaxPower(1);
                     setPathState(15);
                 }
                 break;
             case 15:
-                if(pathTimer.getElapsedTimeSeconds()>2.6){
-                    outtakeGripper.setPosition(.55);
-                    follower.followPath(scorePickup1,true);
-                    setPathState(16);
-                }
-            case 16:
-                if(pathTimer.getElapsedTimeSeconds()>4){
+                if(pathTimer.getElapsedTimeSeconds()>.9){
+//                    outtakeGripper.setPosition(.55);
                     outSlide.setTargetPosition(1050);
                     outSlide.setPower(1);
                     outSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     wrist.setPosition(.7753);
+                    follower.followPath(scorePickup1,true);
                     setPathState(17);
                 }
+                break;
+//            case 16:
+//                if(pathTimer.getElapsedTimeSeconds()>4){
+//                    outSlide.setTargetPosition(1050);
+//                    outSlide.setPower(1);
+//                    outSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                    wrist.setPosition(.7753);
+//                    setPathState(17);
+//                }
             case 17:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(follower.getPose().getX() > (score1Pose.getX() - 1) && follower.getPose().getY() > (score1Pose.getY() - 1)
-                        &&Math.abs(outSlide.getCurrentPosition()-outSlide.getTargetPosition())>15
+
+                if(Math.abs(follower.getPose().getX()-score1Pose.getX())<1&&Math.abs(follower.getPose().getY()-score1Pose.getY())<1
+                        &&Math.abs(outSlide.getCurrentPosition()-outSlide.getTargetPosition())<15
                 ) {
                     /* Score Sample */
                     outSlide.setTargetPosition(1700);
@@ -415,43 +450,49 @@ public class Red4_0 extends OpMode {
                     outSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are parked */
-//                    follower.followPath(intakePickup2,true);
                     setPathState(18);
                 }
                 break;
             case 18:
-                if (Math.abs(outSlide.getCurrentPosition()-outSlide.getTargetPosition())>15){
+                if (Math.abs(outSlide.getCurrentPosition()-outSlide.getTargetPosition())>15
+                &&pathTimer.getElapsedTimeSeconds()>1.5
+                ){
                     outtakeGripper.setPosition(.2);
-                    follower.followPath(intakePickup2,true);
                     setPathState(19);
                 }
+                break;
             case 19:
-                if(pathTimer.getElapsedTimeSeconds()>2.6){
-                    wrist.setPosition(0);
+                if(pathTimer.getElapsedTimeSeconds()>.9){
+                    outtakeGripper.setPosition(.2);
+                    wrist.setPosition(.125);
                     outSlide.setTargetPosition(0);
                     outSlide.setPower(1);
                     outSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    follower.followPath(intakePickup2);
                     setPathState(20);
                 }
+                break;
             case 20:
+
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(follower.getPose().getX() > (intakePose.getX() - 1) && follower.getPose().getY() > (intakePose.getY() - 1)
-                        &&Math.abs(outSlide.getCurrentPosition()-outSlide.getTargetPosition())>15
-                        &&pathTimer.getElapsedTimeSeconds()>4
+                if(Math.abs(follower.getPose().getX()-intakePosePause.getX())<1&&Math.abs(follower.getPose().getY()-intakePosePause.getY())<1
+                        &&pathTimer.getElapsedTimeSeconds()>2
                 ) {
                     /* Score Sample */
                     wrist.setPosition(.125);
-
+                    follower.setMaxPower(.5);
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are parked */
-//                    follower.followPath(scorePickup2,true);
+                    follower.followPath(intakePickup,true);
                     setPathState(21);
                 }
                 break;
             case 21:
                 if(pathTimer.getElapsedTimeSeconds()>2.6){
+                    follower.setMaxPower(1);
                     outtakeGripper.setPosition(.55);
                     setPathState(22);
                 }
+                break;
             case 22:
                 if(pathTimer.getElapsedTimeSeconds()>2.6){
                     wrist.setPosition(.7753);
@@ -461,10 +502,11 @@ public class Red4_0 extends OpMode {
                     follower.followPath(scorePickup2,true);
                     setPathState(23);
                 }
+                break;
             case 23:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(follower.getPose().getX() > (score2Pose.getX() - 1) && follower.getPose().getY() > (score2Pose.getY() - 1)
-                        &&Math.abs(outSlide.getCurrentPosition()-outSlide.getTargetPosition())>15
+                if(Math.abs(follower.getPose().getX()-score2Pose.getX())<1&&Math.abs(follower.getPose().getY()-score2Pose.getY())<1
+                        &&Math.abs(outSlide.getCurrentPosition()-outSlide.getTargetPosition())<15
                 ) {
                     /* Score Sample */
                     outSlide.setTargetPosition(1700);
@@ -482,33 +524,36 @@ public class Red4_0 extends OpMode {
                     follower.followPath(intakePickup3,true);
                     setPathState(25);
                 }
+                break;
             case 25:
                 if(pathTimer.getElapsedTimeSeconds()>2.6){
-                    wrist.setPosition(0);
+                    wrist.setPosition(0.125);
                     outSlide.setTargetPosition(0);
                     outSlide.setPower(1);
                     outSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     setPathState(26);
                 }
+                break;
             case 26:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(follower.getPose().getX() > (intakePose.getX() - 1) && follower.getPose().getY() > (intakePose.getY() - 1)
-                        &&Math.abs(outSlide.getCurrentPosition()-outSlide.getTargetPosition())>15
-                        &&pathTimer.getElapsedTimeSeconds()>4
+                if(Math.abs(follower.getPose().getX()-intakePosePause.getX())<1&&Math.abs(follower.getPose().getY()-intakePosePause.getY())<1
+                        &&Math.abs(outSlide.getCurrentPosition()-outSlide.getTargetPosition())<15
+                        &&pathTimer.getElapsedTimeSeconds()>3
                 ) {
                     /* Score Sample */
-                    wrist.setPosition(.125);
-
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are parked */
-//                    follower.followPath(scorePickup2,true);
+                    follower.setMaxPower(.5);
+                    follower.followPath(intakePickup,true);
                     setPathState(27);
                 }
                 break;
             case 27:
                 if(pathTimer.getElapsedTimeSeconds()>2.6){
                     outtakeGripper.setPosition(.55);
+                    follower.setMaxPower(1);
                     setPathState(28);
                 }
+                break;
             case 28:
                 if(pathTimer.getElapsedTimeSeconds()>2.6){
                     wrist.setPosition(.7753);
@@ -518,10 +563,11 @@ public class Red4_0 extends OpMode {
                     follower.followPath(scorePickup3,true);
                     setPathState(29);
                 }
+                break;
             case 29:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(follower.getPose().getX() > (score3Pose.getX() - 1) && follower.getPose().getY() > (score3Pose.getY() - 1)
-                        &&Math.abs(outSlide.getCurrentPosition()-outSlide.getTargetPosition())>15
+                if(Math.abs(follower.getPose().getX()-score3Pose.getX())<1&&Math.abs(follower.getPose().getY()-score3Pose.getY())<1
+                        &&Math.abs(outSlide.getCurrentPosition()-outSlide.getTargetPosition())<15
                 ) {
                     /* Score Sample */
                     outSlide.setTargetPosition(1700);
@@ -535,7 +581,7 @@ public class Red4_0 extends OpMode {
                 break;
 
             case 30:
-                if (Math.abs(outSlide.getCurrentPosition()-outSlide.getTargetPosition())>15){
+                if (Math.abs(outSlide.getCurrentPosition()-outSlide.getTargetPosition())<15){
                     outtakeGripper.setPosition(.2);
                     wrist.setPosition(0.5);
                     outSlide.setTargetPosition(200);
@@ -545,10 +591,11 @@ public class Red4_0 extends OpMode {
                     follower.followPath(park,true);
                     setPathState(31);
                 }
-
+                break;
             case 31:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
-                if(follower.getPose().getX() > (parkPose.getX() - 1) && follower.getPose().getY() > (parkPose.getY() - 1)) {
+
+                if(Math.abs(follower.getPose().getX()-parkPose.getX())<1&&Math.abs(follower.getPose().getY()-parkPose.getY())<1)            {
                     /* Level 1 Ascent */
 
                     /* Set the state to a Case we won't use or define, so it just stops running an new paths */
@@ -578,6 +625,7 @@ public class Red4_0 extends OpMode {
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.addData("slidePos", outSlide.getCurrentPosition());
         telemetry.update();
     }
 
